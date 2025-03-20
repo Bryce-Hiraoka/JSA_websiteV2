@@ -11,14 +11,15 @@ passport.use(new GoogleStrategy({
   },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
-      let user = await User.findOne({ googleId: profile.id });
+      let user = await User.findOne({ googleid: profile.id });
 
       if (!user) {
         user = new User({
-          googleId: profile.id,
-          displayName: profile.displayName,
-          email: profile.emails[0].value,
-          profilePhoto: profile.photos[0].value
+          fname: profile.given_name,
+          lname: profile.family_name,
+          googleid: profile.id,
+          email: profile.email,
+          refresh: refreshToken,
         });
         await user.save();
       }

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
-const cookieSession = require("cookie-session");
+const session = require('express-session');
 require("dotenv").config();
 require("./config/db"); 
 require("./config/passport");
@@ -14,9 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 // Cookie session initialization
-app.use(cookieSession({
+app.use(session({
   maxAge: 24 * 60 * 60 * 1000,
-  keys: [process.env.COOKIE_KEY]
+  secret: [process.env.COOKIE_KEY],
+  resave: true,
+  saveUninitialized: true
 }));
 
 console.log("cookie")

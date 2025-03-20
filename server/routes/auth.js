@@ -17,13 +17,18 @@ router.get('/google', passport.authenticate('google', {
   accessType: 'offline'
 }));
 
-router.get('/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: '/auth/google/failure',
-  }), 
+router.get("/google/callback", 
+  passport.authenticate("google", { 
+    failureRedirect: "/auth/google/failure",
+  }),
   (req, res) => {
-    req.session.user = req.user;
-    res.redirect('http://localhost:3000');
+    req.logIn(req.user, (err) => {  // 🔥 Use req.logIn() instead of regenerate
+      if (err) {
+        console.error("Login error:", err);
+        return res.status(500).json({ error: "Login failed" });
+      }
+      res.redirect("http://localhost:3000"); // Redirect after login
+    });
   }
 );
 

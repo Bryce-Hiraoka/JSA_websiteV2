@@ -1,7 +1,11 @@
+console.log('in db')
 const mongoose = require("mongoose");
+console.log('mongoose')
 require("dotenv").config();
 
 const mongoURI = process.env.MONGO_URI;
+
+console.log('here')
 
 if (!mongoURI) {
     console.error("No URI");

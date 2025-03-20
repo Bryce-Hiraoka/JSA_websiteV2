@@ -1,33 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import AppRoutes from "./routes";
+import Layout from "./components/Layout";
+import "bootstrap/dist/css/bootstrap.min.css";
+import './App.css';
 
 function App() {
-
-  const [backendData, setBackendData] = useState([{}]);
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api").then(
-      response => response.json()
-    ).then(
-      data => {
-        setBackendData(data);
-      }
-    )
-  }, [])
-
-
   return (
-    <div>
-
-      {(typeof backendData.users === 'undefined') ? (
-        <p> Loading... </p>
-      ): (
-        backendData.users.map((user, i) => (
-          <p key={i}> {user} </p>
-        ))
-      )}
-
-    </div>
-  )
+      <Layout>
+        <AppRoutes />
+      </Layout>
+  );
 }
 
 export default App;
