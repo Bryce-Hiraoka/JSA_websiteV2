@@ -3,12 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import csv
 import json
+import io
+import os
 from collections import defaultdict
-
-
-UPLOAD_DIR = Path() / 'uploads'
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
 app = FastAPI()
+load_dotenv()
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,19 +20,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-@app.post('/upload/')
-async def create_upload_file(file_upload: UploadFile):
-    data = await file_upload.read()
-    save_to = UPLOAD_DIR / file_upload.filename
-    with open(save_to, 'w', encoding='utf-8', newline='') as f:
-        f.write(data.decode('utf-8'))
-
+def build_tree(file):
     # Read the CSV into a list fof parent-child pairs
     parent_child_pairs = []
-    with open(save_to, mode='r', encoding='utf-8', newline='') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            parent_child_pairs.append((row['BIG'], row['LITTO']))
+    #with open(csv_file, mode='r') as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        parent_child_pairs.append((row['BIG'], row['LITTO']))
     
     # Build a dictionary to map parents to their children
     tree = defaultdict(list)
@@ -54,7 +50,39 @@ async def create_upload_file(file_upload: UploadFile):
             result["children"] = [build_json_tree(child) for child in children]
         return result
     
-    print(json.dumps(tree, indent=4))
     # Build and return the final tree starting from the root
     return build_json_tree(root)
 
+def get_next_id(collection):
+    last_doc = collection.find_one(sort=[("_id", -1)])  # Find the highest _id
+    return (last_doc["_id"] + 1) if last_doc else 1  # Start from 1 if empty
+
+def insert_db(tree):
+    database_url = os.getenv("MONGO_URI")
+    client = MongoClient(database_url)
+    db = client[os.getenv("db_name")]
+    collection = db[os.getenv("col_name")]
+
+    # Insert the data into the collection
+    tree["_id"] = get_next_id(collection)
+
+    # Insert the data
+    collection.insert_one(tree)
+
+    client.close()
+    print(f"Inserted document with ID: {tree['_id']}")
+
+    # Close the connection
+    client.close()
+
+    print("JSON data saved to MongoDB successfully.")
+
+
+@app.post('/upload/')
+async def create_upload_file(file_upload: UploadFile):
+    data = await file_upload.read()
+    csv_string = data.decode('utf-8')
+    file = io.StringIO(csv_string)
+    tree = build_tree(file)  
+    insert_db(tree)
+ 
