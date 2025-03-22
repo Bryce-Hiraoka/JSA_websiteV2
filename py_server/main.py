@@ -1,13 +1,13 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
+from collections import defaultdict
+from pymongo import MongoClient
+from dotenv import load_dotenv
 import csv
 import json
 import io
 import os
-from collections import defaultdict
-from pymongo import MongoClient
-from dotenv import load_dotenv
 
 app = FastAPI()
 load_dotenv()
@@ -76,7 +76,6 @@ def insert_db(tree):
     client.close()
 
     print("JSON data saved to MongoDB successfully.")
-
 
 @app.post('/upload/')
 async def create_upload_file(file_upload: UploadFile):

@@ -40,11 +40,13 @@ console.log("cors")
 const authRoute = require("./routes/auth");
 const calendarRoute = require("./routes/calendar");
 const eventbriteRoute = require("./routes/eventbrite");
+const family_tree = require("./routes/family_tree");
 
 // Use Routes
 app.use("/auth", authRoute);
 app.use("/calendar", calendarRoute);
 app.use("/eventbrite", eventbriteRoute);
+app.use("/tree", family_tree);
 
 // Root Route
 app.get("/", (req, res) => {
