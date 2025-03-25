@@ -4,7 +4,7 @@ const Tree = require('../models/treeModel');
 router.get('/get_json', async (req, res) => {
 
     //todo: get id from req
-    const id = 2;
+    const id = 3;
 
     try {
         // Find document by ID but exclude _id in the result
