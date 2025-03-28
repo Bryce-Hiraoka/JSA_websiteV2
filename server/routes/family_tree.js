@@ -1,10 +1,9 @@
 const router = require('express').Router();
 const Tree = require('../models/treeModel');
 
-router.get('/get_json', async (req, res) => {
-
-    //todo: get id from req
-    const id = 3;
+router.get('/get_json/:id', async (req, res) => {
+ 
+    const id = req.params.id;
 
     try {
         // Find document by ID but exclude _id in the result

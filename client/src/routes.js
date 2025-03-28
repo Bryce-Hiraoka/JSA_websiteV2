@@ -10,7 +10,7 @@ function AppRoutes() {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/About" element={<About />} />
-            <Route path="/Tree" element={<FamilyTreePage />} />
+            <Route path="/Tree/:id" element={<FamilyTreePage />} />
             <Route path="/Test" element={<Test />} />
         </Routes>
     );
